@@ -7,11 +7,12 @@
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-
+#include "stdafx.h"
 #include "server.hpp"
 #include <signal.h>
 #include <utility>
 
+using namespace boost::asio;
 namespace http {
 namespace server {
 
@@ -37,7 +38,12 @@ server::server(const std::string& address, const std::string& port,
 
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, port});
+  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(
+	  ip::tcp::endpoint(
+		ip::address::from_string(address),
+			atoi(port.c_str())
+	  )
+  );
   acceptor_.open(endpoint.protocol());
   acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
   acceptor_.bind(endpoint);
