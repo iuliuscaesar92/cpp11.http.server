@@ -1,7 +1,3 @@
-// cpp11.http.server.cpp : Defines the entry point for the console application.
-//
-
-#include "stdafx.h"
 //
 // server.cpp
 // ~~~~~~~~~~
@@ -13,8 +9,8 @@
 //
 
 #include "server.hpp"
-#include <boost/bind.hpp>
 #include <signal.h>
+#include <utility>
 
 namespace http {
 namespace server {
@@ -25,7 +21,7 @@ server::server(const std::string& address, const std::string& port,
     signals_(io_service_),
     acceptor_(io_service_),
     connection_manager_(),
-    new_connection_(),
+    socket_(io_service_),
     request_handler_(doc_root)
 {
   // Register to handle the signals that indicate when the server should exit.
@@ -36,18 +32,18 @@ server::server(const std::string& address, const std::string& port,
 #if defined(SIGQUIT)
   signals_.add(SIGQUIT);
 #endif // defined(SIGQUIT)
-  signals_.async_wait(boost::bind(&server::handle_stop, this));
+
+  do_await_stop();
 
   // Open the acceptor with the option to reuse the address (i.e. SO_REUSEADDR).
   boost::asio::ip::tcp::resolver resolver(io_service_);
-  boost::asio::ip::tcp::resolver::query query(address, port);
-  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve(query);
+  boost::asio::ip::tcp::endpoint endpoint = *resolver.resolve({address, port});
   acceptor_.open(endpoint.protocol());
   acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
   acceptor_.bind(endpoint);
   acceptor_.listen();
 
-  start_accept();
+  do_accept();
 }
 
 void server::run()
@@ -59,46 +55,40 @@ void server::run()
   io_service_.run();
 }
 
-void server::start_accept()
+void server::do_accept()
 {
-  new_connection_.reset(new connection(io_service_,
-        connection_manager_, request_handler_));
-  acceptor_.async_accept(new_connection_->socket(),
-      boost::bind(&server::handle_accept, this,
-        boost::asio::placeholders::error));
+  acceptor_.async_accept(socket_,
+      [this](boost::system::error_code ec)
+      {
+        // Check whether the server was stopped by a signal before this
+        // completion handler had a chance to run.
+        if (!acceptor_.is_open())
+        {
+          return;
+        }
+
+        if (!ec)
+        {
+          connection_manager_.start(std::make_shared<connection>(
+              std::move(socket_), connection_manager_, request_handler_));
+        }
+
+        do_accept();
+      });
 }
 
-void server::handle_accept(const boost::system::error_code& e)
+void server::do_await_stop()
 {
-  // Check whether the server was stopped by a signal before this completion
-  // handler had a chance to run.
-  if (!acceptor_.is_open())
-  {
-    return;
-  }
-
-  if (!e)
-  {
-    connection_manager_.start(new_connection_);
-  }
-
-  start_accept();
-}
-
-void server::handle_stop()
-{
-  // The server is stopped by cancelling all outstanding asynchronous
-  // operations. Once all operations have finished the io_service::run() call
-  // will exit.
-  acceptor_.close();
-  connection_manager_.stop_all();
+  signals_.async_wait(
+      [this](boost::system::error_code /*ec*/, int /*signo*/)
+      {
+        // The server is stopped by cancelling all outstanding asynchronous
+        // operations. Once all operations have finished the io_service::run()
+        // call will exit.
+        acceptor_.close();
+        connection_manager_.stop_all();
+      });
 }
 
 } // namespace server
 } // namespace http
-
-//int _tmain(int argc, _TCHAR* argv[])
-//{
-//	return 0;
-//}
-
