@@ -8,13 +8,13 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 #include "stdafx.h"
-#include "request_handler.hpp"
+//#include "request_handler.hpp"
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "mime_types.hpp"
-#include "reply.hpp"
-#include "request.hpp"
+//#include "mime_types.hpp"
+//#include "reply.hpp"
+//#include "request.hpp"
 
 namespace http {
 namespace server {
