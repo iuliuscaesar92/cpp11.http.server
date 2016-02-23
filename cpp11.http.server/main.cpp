@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
     // Initialise the server.
     //http::server::server s(argv[1], argv[2], argv[3]);
 	  std::string doc = "G:\\simple_orange\\www";
-	  std::string ip =  "127.0.0.1";
+	  std::string ip =  "192.168.1.7";
 	  std::string port = "80";
 	  http::server::server s(ip, port, doc);
 
