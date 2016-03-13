@@ -24,32 +24,32 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="server.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="request_parser.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="request_handler.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="request.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="reply.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mime_types.hpp">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="connection_manager.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="header.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="connection_manager.hpp">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="connection.hpp">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mime_types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="reply.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="request.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="request_handler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="request_parser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="server.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,5 +80,8 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>
